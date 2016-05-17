@@ -1,0 +1,112 @@
+﻿@model  List<TopicsViewModel>
+@using ForumWEB.Models
+@{
+    ViewBag.Title = "Index";
+}
+@if (User.IsInRole("Administrator"))
+{
+    <td colspan="3"><b>@Html.ActionLink("Создать новый раздел", "NewSection", "Admin")</b></td>
+    <br/><br/>
+    @Html.Action("TopicsList", "Admin")
+}
+else
+{
+    @Html.Action("TopicsList", "Home")
+}
+
+<table>
+    <tbody>
+        <tr>
+            <td colspan="3"><b><font class="text">Новая тема: </font></b></td>
+        </tr>
+        <tr>
+            <td width=25% class="user">
+                @if (User.IsInRole("Administrator") || User.IsInRole("Ban") || User.IsInRole("User"))
+                {
+                    <div>
+                        <b><font class="text">@ViewBag.Name</font></b><br /><br />
+                        <div><img src="@ViewBag.Avatar" width="120" height="120"></div><br />
+                        <div>@Html.ActionLink("Изменить аватар", "ChangeAvatar", "Home", new { UserID = ViewBag.UserID }, null)</div>
+                    </div>}
+                else
+                {
+                    <div>
+                        <b><font class="text">Гость</font></b><br /><br />
+                        <div><img src="http://mydermatolog.ru/sites/default/files/pictures/userdef.jpg" width="120" height="120"></div>
+                    </div>}
+            </td>
+            <td>
+                <div class="textbox">
+                    <form action="/Home/Index" method="post">
+                        @if (User.IsInRole("Administrator") || (User.IsInRole("User")))
+                        {
+                            <input type="hidden" value="@ViewBag.UserID" name="UserID" />
+                            <select name="SectionID" style="width: 100%">
+                                @for (int i = 0; i < ViewBag.SectionID.Length; i++)
+                                {
+                                    <option value="@ViewBag.SectionID[i]">@ViewBag.SectionName[i]</option>}
+                            </select>
+                            <br /><br />
+                            <div>
+                                <font class="text">Название</font>
+                            </div>
+                            <div>
+                                <input name="TopicName" style="width: 100%" type="text" value="@ViewBag.TopicName" />
+                            </div>
+                            <br />
+                            <div>
+                                <font class="text">Сообщение</font>
+                            </div>
+                            <div>
+                                <textarea name="TopicText" cols="56" rows="8">@ViewBag.TopicText</textarea>
+                            </div>
+                            <p>
+                                <input type="submit" value="Отправить" />
+                            </p>}
+                        else
+                        {
+                            <select name="SectionID" style="width: 100%" disabled>
+                                @for (int i = 0; i < ViewBag.SectionID.Length; i++)
+                                {
+                                    <option value="@ViewBag.SectionID[i]">@ViewBag.SectionName[i]</option>}
+                            </select>
+                            <br /><br />
+                            <div>
+                                <font class="text">Название</font>
+                            </div>
+                            <div>
+                                <input name="TopicName" type="text" style="width: 100%" disabled />
+                            </div>
+                            <br />
+                            <div>
+                                <font class="text">Сообщение</font>
+                            </div>
+                            <div>
+                                @if (User.IsInRole("Ban"))
+                                {
+                                    <textarea name="TopicText" cols="56" rows="8" disabled
+                                              placeholder="Ваш  аккаунт забанен и вы не можете создавать темы на форуме."></textarea>}
+                                else
+                                {
+                                    <textarea name="Text" cols="56" rows="8" disabled
+                                              placeholder="Вы не можете создавать темы на форуме. Войдте или зарегистрируйтесь."></textarea>
+}
+                            </div>
+                            <p>
+                                <input type="submit" value="Отправить" disabled />
+                            </p>}
+                    </form>
+                </div>
+            </td>
+            <td width=25%>
+                <div>
+                    @using (Html.BeginForm())
+                    {
+                        <font class="text">
+                            @Html.ValidationSummary()
+                        </font>}
+                </div>
+            </td>
+        </tr>
+    </tbody>
+</table>
